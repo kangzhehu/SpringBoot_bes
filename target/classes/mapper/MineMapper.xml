@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.bes.mapper.MineMapper">
+    <select id="selectMineById" resultType="com.example.bes.entity.Mine" parameterType="java.lang.Integer">
+        SELECT * FROM mine WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectMineByName" resultType="com.example.bes.entity.Mine" parameterType="java.lang.String">
+        SELECT * FROM mine WHERE name LIKE CONCAT('%',#{name, jdbcType=VARCHAR} ,'%')
+    </select>
+
+    <select id="selectAllMine" resultType="com.example.bes.entity.Mine">
+        SELECT * FROM mine
+    </select>
+
+    <select id="selectMineByRegion" resultType="com.example.bes.entity.Mine" parameterType="java.lang.String">
+        SELECT * FROM mine WHERE region LIKE CONCAT('%', #{region, jdbcType=VARCHAR}, '%')
+    </select>
+
+    <select id="selectMineByClassification" resultType="com.example.bes.entity.Mine" parameterType="java.lang.String">
+        SELECT * FROM mine WHERE classification LIKE  CONCAT('%', #{classification, jdbcType=VARCHAR},'%')
+    </select>
+
+    <select id="selectMineByProduct" resultType="com.example.bes.entity.Mine" parameterType="java.lang.String">
+        SELECT * FROM mine WHERE product LIKE CONCAT('%',#{product,jdbcType=VARCHAR},'%')
+    </select>
+
+    <select id="selectMineByProducts" resultType="com.example.bes.entity.Mine">
+        SELECT * FROM mine WHERE 1=1
+        <foreach item="product" collection="products" open="AND (" separator=" OR " close=")">
+            products LIKE CONCAT('%', #{product}, '%')
+        </foreach>
+    </select>
+
+    <select id="selectByword" resultType="com.example.bes.entity.Mine" parameterType="java.lang.String">
+        SELECT * FROM mine WHERE name LIKE CONCAT('%',#{word, jdbcType=VARCHAR} ,'%')
+        OR products LIKE CONCAT('%',#{word, jdbcType=VARCHAR} ,'%')
+        OR classification LIKE CONCAT('%',#{word, jdbcType=VARCHAR} ,'%')
+    </select>
+
+    <select id="selectMineProducts" resultMap="mineProductMap">
+        SELECT m.id, m.name, m.region, m.classification, m.number, m.area, m.lon, m.lat, m.products,m.notes,
+               p.tungsten, p.cutter, p.copper, p.silver,p.lead, p.zinc, p.tantalum, p.niobium, p.tombarthite, p.fluorite, p.other,
+                s.state
+        FROM mine m
+        JOIN product p ON m.number = p.number
+        JOIN status s ON m.number = s.number
+        WHERE s.state = 'published'
+        <if test="name != null and name != ''">
+            AND m.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="region != null and region != ''">
+            AND m.region = #{region}
+        </if>
+        <if test="classification !=null and classification != ''">
+            AND m.classification = #{classification}
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sort == '+id'">m.id ASC</when>
+            <when test="sort == '-id'">m.id DESC</when>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <resultMap id="mineProductMap" type="com.example.bes.entity.Table">
+        <result property="id" column="id"/>
+        <result property="number" column="number"/>
+        <result property="name" column="name"/>
+        <result property="state" column="state"/>
+        <result property="region" column="region"/>
+        <result property="classification" column="classification"/>
+        <result property="area" column="area"/>
+        <result property="lon" column="lon"/>
+        <result property="lat" column="lat"/>
+        <result property="products" column="products"/>
+        <result property="notes" column="notes"/>
+        <result property="tungsten" column="tungsten"/>
+        <result property="cutter" column="cutter"/>
+        <result property="copper" column="copper"/>
+        <result property="silver" column="silver"/>
+        <result property="lead" column="lead"/>
+        <result property="zinc" column="zinc"/>
+        <result property="tantalum" column="tantalum"/>
+        <result property="niobium" column="niobium"/>
+        <result property="tombarthite" column="tombarthite"/>
+        <result property="fluorite" column="fluorite"/>
+        <result property="other" column="other"/>
+    </resultMap>
+
+    <select id="selectCountMine" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM mine m
+        JOIN status s ON m.number = s.number
+        WHERE s.state = 'published'
+        <if test="name != null and name != ''">
+            AND m.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="region != null and region != ''">
+            AND m.region = #{region}
+        </if>
+        <if test="classification !=null and classification != ''">
+            AND m.classification = #{classification}
+        </if>
+    </select>
+
+    <insert id="insertMine" parameterType="com.example.bes.entity.Mine">
+        INSERT INTO mine(id,number, name,region,classification, area, lon, lat, products, notes)
+        VALUES (#{id}, #{number}, #{name}, #{region}, #{classification}, #{area}, #{lon}, #{lat}, #{products}, #{notes})
+    </insert>
+
+    <update id="updateMine">
+        UPDATE mine
+        SET name = #{name}, number = #{number}, region = #{region},classification = #{classification}, area = #{area}, lon=#{lon}, lat=#{lat},
+            products = #{products}, notes = #{notes}
+        WHERE id = #{id}
+    </update>
+</mapper>

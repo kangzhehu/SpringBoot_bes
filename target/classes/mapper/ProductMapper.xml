@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.bes.mapper.ProductMapper">
+    <resultMap id="productInfoMap" type="com.example.bes.entity.Product">
+        <result column="tungsten" property="tungsten" jdbcType="DOUBLE"></result>
+        <result column="cutter" property="cutter" jdbcType="DOUBLE"></result>
+        <result column="copper" property="copper" jdbcType="DOUBLE"></result>
+        <result column="silver" property="silver" jdbcType="DOUBLE"></result>
+        <result column="lead" property="lead" jdbcType="DOUBLE"></result>
+        <result column="zinc" property="zinc" jdbcType="DOUBLE"></result>
+        <result column="tantalum" property="tantalum" jdbcType="DOUBLE"></result>
+        <result column="niobium" property="niobium" jdbcType="DOUBLE"></result>
+        <result column="tombarthite" property="tombarthite" jdbcType="DOUBLE"></result>
+        <result column="fluorite" property="fluorite" jdbcType="DOUBLE"></result>
+        <result column="other" property="other" jdbcType="DOUBLE"></result>
+    </resultMap>
+    <select id="selectProductByName" resultType="com.example.bes.entity.Product" parameterType="java.lang.String">
+        SELECT *
+        FROM product
+        WHERE name LIKE #{name,jdbcType=VARCHAR}
+    </select>
+
+
+    <insert id="insertProduct" parameterType="com.example.bes.entity.Product">
+        INSERT INTO product(id,number, name,tungsten,cutter,copper,silver,lead,zinc,tantalum,niobium,tombarthite,fluorite,other )
+        VALUES(#{id},#{number}, #{name},#{tungsten},#{cutter},#{copper},#{silver},#{lead},#{zinc},#{tantalum},#{niobium},#{tombarthite},#{fluorite},#{other} )
+    </insert>
+
+    <update id="updateProduct" parameterType="com.example.bes.entity.Product">
+        UPDATE product
+        SET name=#{name}, number=#{number}, tungsten=#{tungsten},cutter=#{cutter}, copper=#{copper},silver=#{silver},`lead`=#{lead},zinc=#{zinc},
+            tantalum=#{tantalum}, niobium=#{niobium}, tombarthite=#{tombarthite}, fluorite=#{fluorite}, other=#{other}
+        WHERE id = #{id}
+    </update>
+</mapper>

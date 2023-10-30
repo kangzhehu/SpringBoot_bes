@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.bes.mapper.StatusMapper">
+    <insert id="insertStatus" parameterType="com.example.bes.entity.Status">
+        INSERT INTO status(id, number, name, state)
+        VALUES(#{id},#{number},#{name},#{state})
+    </insert>
+
+    <update id="updateStatus" parameterType="com.example.bes.entity.Status">
+        UPDATE status
+        SET number=#{number}, name=#{name}, state=#{state}
+        WHERE id=#{id}
+    </update>
+
+    <update id="deleteStatus" parameterType="com.example.bes.entity.Status">
+        UPDATE status
+        SET  state=#{state}
+        WHERE id=#{id}
+    </update>
+
+
+    <update id="updateDate" parameterType="java.lang.String">
+        UPDATE status
+        SET `update`=#{time}
+        WHERE name=#{name}
+    </update>
+
+
+    <select id="getSelectStatusByName" parameterType="java.lang.String" resultType="com.example.bes.entity.Status">
+        SELECT * FROM status
+        WHERE name = #{name}
+    </select>
+</mapper>
